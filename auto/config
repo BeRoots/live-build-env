@@ -1,0 +1,597 @@
+#!/bin/sh
+
+#config script for live-build version 4.0.3-1 by BeRoots :)
+
+#####################################################################
+#BEGIN OF SETTINGS
+
+#live-build specials params
+_IGNORESYSTEMDEFAULTS=true  # true|false
+_CLEAN=true # true|false
+_DEBUG=false # true|false
+_DUMP=false # true|false
+_FORCE=false # true|false
+_QUIET=false # true|false
+_VERBOSE=true # true|false
+
+#lb config params
+case "$(dpkg --print-architecture)" in
+	amd64)
+		_ARCHITECTURE="amd64"
+		_LINUX_FLAVOURS='amd64' # FLAVOUR|"FLAVOURS"
+		_SOURCE='true' # true|false
+		;;
+
+	i386)
+		_ARCHITECTURE="i386"
+		_LINUX_FLAVOURS='486 686-pae' # FLAVOUR|"FLAVOURS"
+		_SOURCE='false' # true|false
+		;;
+esac
+_APT='apt' # apt|aptitude
+_APT_FTP_PROXY='' # URL
+_APT_HTTP_PROXY='' # URL
+_APT_INDICES='true' # true|false
+_APT_OPTIONS='--yes' # OPTION|"OPTIONS"
+_APTITUDE_OPTIONS='--assume-yes' # OPTION|"OPTIONS"
+_APT_PIPELINE='' # DEPTH empty by default
+_APT_RECOMMENDS='true' # true|false
+_APT_SECURE='true' # true|false
+_APT_SOURCE_ARCHIVES='true' # true|false
+
+_ARCHIVE_AREAS='main contrib non-free' # ARCHIVE_AREA|"ARCHIVE_AREAS"
+_PARENT_ARCHIVE_AREAS='main' # ARCHIVE_AREA|"ARCHIVE_AREAS"
+
+_BINARY_IMAGES='hdd' # iso|iso-hybrid|netboot|tar|hdd
+_BINARY_FILESYSTEM='fat16' # fat16|fat32|ext2|ext3|ext4
+_BINARY_INDICES='true' # true|false|none
+
+_BOOTAPPEND_INSTALL='' # PARAMETER|"PARAMETERS"
+_BOOTAPPEND_LIVE='boot=live components quiet splash locales=FR_fr.UTF-8 keyboard-layouts=fr(latin9)' # PARAMETER|"PARAMETERS"
+
+_BOOTLOADER='syslinux' # grub|syslinux
+
+_BOOTSTRAP='debootstrap' # cdebootstrap|cdebootstrap-static|debootstrap
+
+_CACHE='true' # true|false
+_CACHE_INDICES='true' # true|false
+_CACHE_PACKAGES='true' # true|false
+_CACHE_STAGES='bootstrap' # true|false|STAGE|"STAGES"
+
+_CHECKSUM='md5' # md5|sha1|sha256|none
+
+_COMPRESSION='none' # bzip2|gzip|lzip|none
+
+_CONFIG='' # GIT_URL::GIT_ID
+
+_BUILD_WITH_CHROOT='true' # true|false
+_CHROOT_FILESYSTEM='squashfs' # ext2|ext3|ext4|squashfs|jffs2|none
+
+_CONFFILE='' # FILE
+
+_DISTRIBUTION='jessie' # CODENAME
+_PARENT_DISTRIBUTION='jessie' # CODENAME
+_PARENT_DEBIAN_INSTALLER_DISTRIBUTION='jessie' # CODENAME
+
+_DEBCONF_FRONTEND='noninteractive' # dialog|editor|noninteractive|readline
+_DEBCONF_PRIORITY='critical' # low|medium|high|critical
+
+_DEBIAN_INSTALLER_='false' # true|cdrom|netinst|netboot|businesscard|live|false
+_DEBIAN_INSTALLER_DISTRIBUTION='hdd' # daily|CODENAME
+_DEBIAN_INSTALLER_PRESEEDFILE='local/preseed.cfg' # FILE|URL
+_DEBIAN_INSTALLER_GUI='true' # true|false
+
+_FDISK='' # fdisk|fdisck.dist #This is autodet. and does generally not need any customization.
+
+_FIRMWARE_BINARY='true' # true|false
+_FIRMWARE_CHROOT='true' # true|false
+
+_GRUB_SPLASH='templates/grub2/splash.tga' # FILE
+
+_GZIP_OPTIONS='-6 --rsyncable' # OPTION|"OPTIONS"
+
+_HOOKS='' # FILE
+
+_HDD_SIZE='64000' # MB #default is set to 10000 (= 10GB) -> auto???
+
+_INITRAMFS='auto' # auto|none|live-boot|casper
+_INITRAMFS_COMPRESSION='gzip' # bzip2|gzip|lzma
+
+_INITSYSTEM='sysvinit' # sysvinit|runit|systemd|upstart|none
+
+_INTERACTIVE='false' # shell|false shell after chroot stage and before binary
+
+_ISOHYBRID_OPTIONS='' # OPTION|"OPTIONS"
+
+_ISO_APPLICATION='Debian Live' # NAME
+_ISO_PREPARER='live-build $VERSION; http://live-systems.org/devel/live-build' # NAME
+_ISO_PUBLISHER='Live Systems project; http://live-systems.org/; debian-live@lists.debian.org' # NAME
+_ISO_VOLUME='Debian hdd $(date +%Y%m%d-%H:%M)' # NAME
+
+_JFFS2_ERASEBLOCK='' # SIZE|default: 64 KiB (0-4096 in byte or after in KiB)
+
+_KEYRING_PACKAGES='debian-archive-keyring' # PACKAGE|"PACKAGES"| default: debian-archive-keyring
+
+_LINUX_PACKAGES='' # "PACKAGES" #If you use  debian kernel packages, you will not have to adjust it.
+
+_LOSETUP='' # losetup|losetup.orig #This is autodet. and does generally not need any customization.
+
+_MEMTEST='memtest86+' # memtest86+|memtest86|none
+
+_PARENT_MIRROR_BOOTSTRAP='http://ftp.fr.debian.org/debian/' # URL
+_PARENT_MIRROR_CHROOT='http://ftp.fr.debian.org/debian/' # URL
+_PARENT_MIRROR_CHROOT_SECURITY='http://security.debian.org/' # URL
+_PARENT_MIRROR_BINARY='http://http.debian.net/debian/' # URL
+_PARENT_MIRROR_BINARY_SECURITY='http://security.debian.org/' # URL
+_PARENT_MIRROR_DEBIAN_INSTALLER='http://ftp.debian.org/debian/' # URL
+_MIRROR_BOOTSTRAP='http://ftp.fr.debian.org/debian/' # URL
+_MIRROR_CHROOT='http://ftp.fr.debian.org/debian/' # URL
+_MIRROR_CHROOT_SECURITY='http://security.debian.org/' # URL
+_MIRROR_BINARY='http://http.debian.net/debian/' # URL
+_MIRROR_BINARY_SECURITY='http://security.debian.org/' # URL
+_MIRROR_DEBIAN_INSTALLER='http://ftp.debian.org/debian/' # URL
+
+_MODE='debian' # debian|progress-linux|ubuntu
+
+_SYSTEM='live' # live|normal
+
+_NET_ROOT_FILESYSTEM='nfs' # nfs|cfs
+_NET_ROOT_MOUNTOPTIONS='' # OPTIONS
+_NET_ROOT_PATH='/srv/debian-live' # PATH
+_NET_ROOT_SERVER='192.168.1.1' # IP|HOSTNAME
+_NET_COW_FILESYSTEM='nfs' # nfs|cfs
+_NET_COW_MOUNTOPTIONS='' # OPTIONS
+_NET_COW_PATH='' # PATH
+_NET_COW_SERVER='' # IP|HOSTNAME
+_NET_TARBALL='true' # true|false
+
+_SWAP_FILE_PATH='' # PATH
+_SWAP_FILE_SIZE='2048' # MB
+
+_SECURITY='true' # true|false
+
+_SOURCE_IMAGES='hdd' # iso|netboot|tar|hdd
+
+_TASKSEL='apt' # apt|aptitude|tasksel
+
+_TEMPLATES='templates/' # PATH
+
+_UPDATES='true' # true|false
+
+_BACKPORTS='true' # true|false
+
+_WIN32_LOADER='false' # true|false
+
+#END OF SETTINGS
+#####################################################################
+
+
+
+
+this_datetimefile=$(date +"%d-%m-%Y-%T")
+this_datetime=$(date +"%D %T")
+# make commande in temporary cache and backup her with time in ./confg/
+touch ./myautolbconfigcmd.sh
+touch ./MyLbConfig$this_datetimefile.txt
+echo "#!/bin/sh" >> ./myautolbconfigcmd.sh
+echo "#this file is generated by auto script for lb config (live-build v4.0.3-1) and must be deleted." >> ./myautolbconfigcmd.sh
+echo "set -e" >> ./myautolbconfigcmd.sh
+
+echo 'lb config noauto \' >> ./myautolbconfigcmd.sh
+echo 'lb config noauto \' >> ./MyLbConfig$this_datetimefile.txt
+if [ "$_IGNORESYSTEMDEFAULTS" = true ]; then
+	echo '--ignore-system-defaults \' >> ./myautolbconfigcmd.sh
+	echo '--ignore-system-defaults \' >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CLEAN" = true ]; then
+	echo '--clean \' >> ./myautolbconfigcmd.sh
+	echo '--clean \' >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DEBUG" = true ]; then
+	echo '--debug \' >> ./myautolbconfigcmd.sh
+	echo '--debug \' >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DUMP" = true ]; then
+	echo '--dump \' >> ./myautolbconfigcmd.sh
+	echo '--dump \' >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_FORCE" = true ]; then
+	echo '--force \' >> ./myautolbconfigcmd.sh
+	echo '--force \' >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_QUIET" = true ]; then
+	echo '--quiet \' >> ./myautolbconfigcmd.sh
+	echo '--quiet \' >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_VERBOSE" = true ]; then
+	echo '--verbose \' >> ./myautolbconfigcmd.sh
+	echo '--verbose \' >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT" != '' ]; then
+	echo "--apt \""${_APT}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt \""${_APT}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_FTP_PROXY" != '' ]; then
+	echo "--apt-ftp-proxy \""${_APT_FTP_PROXY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-ftp-proxy \""${_APT_FTP_PROXY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_HTTP_PROXY" != '' ]; then
+	echo "--apt-http-proxy \""${_APT_HTTP_PROXY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-http-proxy \""${_APT_HTTP_PROXY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_INDICES" != '' ]; then
+	echo "--apt-indices \""${_APT_INDICES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-indices \""${_APT_INDICES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_OPTIONS" != '' ]; then
+	echo "--apt-options \""${_APT_OPTIONS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-options \""${_APT_OPTIONS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APTITUDE_OPTIONS_OPTIONS" != '' ]; then
+	echo "--aptitude-options \""${_APT_OPTIONS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--aptitude-options \""${_APT_OPTIONS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_PIPELINE" != '' ]; then
+	echo "--apt-pipeline \""${_APT_PIPELINE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-pipeline \""${_APT_PIPELINE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_RECOMMENDS" != '' ]; then
+	echo "--apt-recommends \""${_APT_RECOMMENDS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-recommends \""${_APT_RECOMMENDS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_SECURE" != '' ]; then
+	echo "--apt-secure \""${_APT_SECURE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-secure \""${_APT_SECURE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_APT_SOURCE_ARCHIVES" != '' ]; then
+	echo "--apt-source-archives \""${_APT_SOURCE_ARCHIVES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--apt-source-archives \""${_APT_SOURCE_ARCHIVES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_ARCHITECTURE" != '' ]; then
+	echo "--architecture \""${_ARCHITECTURE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--architecture \""${_ARCHITECTURE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_ARCHIVE_AREAS" != '' ]; then
+	echo "--archive-areas \""${_ARCHIVE_AREAS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--archive-areas \""${_ARCHIVE_AREAS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_ARCHIVE_AREAS" != '' ]; then
+	echo "--parent-archive-areas \""${_PARENT_ARCHIVE_AREAS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-archive-areas \""${_PARENT_ARCHIVE_AREAS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BINARY_IMAGES" != '' ]; then
+	echo "--binary-images \""${_BINARY_IMAGES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--binary-images \""${_BINARY_IMAGES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BINARY_FILESYSTEM" != '' ]; then
+	echo "--binary-filesystem \""${_BINARY_FILESYSTEM}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--binary-filesystem \""${_BINARY_FILESYSTEM}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BOOTAPPEND_INSTALL" != '' ]; then
+	echo "--bootappend-install \""${_BOOTAPPEND_INSTALL}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--bootappend-install \""${_BOOTAPPEND_INSTALL}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BOOTAPPEND_LIVE" != '' ]; then
+	echo "--bootappend-live \""${_BOOTAPPEND_LIVE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--bootappend-live \""${_BOOTAPPEND_LIVE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BOOTLOADER" != '' ]; then
+	echo "--bootloader \""${_BOOTLOADER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--bootloader \""${_BOOTLOADER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BOOTSTRAP" != '' ]; then
+	echo "--bootstrap \""${_BOOTSTRAP}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--bootstrap \""${_BOOTSTRAP}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CACHE" != '' ]; then
+	echo "--cache \""${_CACHE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--cache \""${_CACHE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CACHE_INDICES" != '' ]; then
+	echo "--cache-indices \""${_CACHE_INDICES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--cache-indices \""${_CACHE_INDICES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CACHE_PACKAGES" != '' ]; then
+	echo "--cache-packages \""${_CACHE_PACKAGES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--cache-packages \""${_CACHE_PACKAGES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CACHE_STAGES" != '' ]; then
+	echo "--cache-stages \""${_CACHE_STAGES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--cache-stages \""${_CACHE_STAGES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CHECKSUMS" != '' ]; then
+	echo "--checksums \""${_CHECKSUMS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--checksums \""${_CHECKSUMS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_COMPRESSION" != '' ]; then
+	echo "--compression \""${_COMPRESSION}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--compression \""${_COMPRESSION}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CONFIG" != '' ]; then
+	echo "--config \""${_CONFIG}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--config \""${_CONFIG}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BUILD_WITH_CHROOT" != '' ]; then
+	echo "--build-with-chroot \""${_BUILD_WITH_CHROOT}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--build-with-chroot \""${_BUILD_WITH_CHROOT}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CHROOT_FILESYSTEM" != '' ]; then
+	echo "--chroot-filesystem \""${_CHROOT_FILESYSTEM}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--chroot-filesystem \""${_CHROOT_FILESYSTEM}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_CONFFILE" != '' ]; then
+	echo "--conffile \""${_CONFFILE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--conffile \""${_CONFFILE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DISTRIBUTION" != '' ]; then
+	echo "--distribution \""${_DISTRIBUTION}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--distribution \""${_DISTRIBUTION}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_DISTRIBUTION" != '' ]; then
+	echo "--parent-distribution \""${_PARENT_DISTRIBUTION}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-distribution \""${_PARENT_DISTRIBUTION}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_DEBIAN_INSTALLER_DISTRIBUTION" != '' ]; then
+	echo "--parent-debian-installer-distribution \""${_PARENT_DEBIAN_INSTALLER_DISTRIBUTION}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-debian-installer-distribution \""${_PARENT_DEBIAN_INSTALLER_DISTRIBUTION}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DEBCONF_FRONTEND" != '' ]; then
+	echo "--debconf-frontend \""${_DEBCONF_FRONTEND}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--debconf-frontend \""${_DEBCONF_FRONTEND}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DEBCONF_PRIORITY" != '' ]; then
+	echo "--debconf-priority \""${_DEBCONF_PRIORITY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--debconf-priority \""${_DEBCONF_PRIORITY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DEBIAN_INSTALLER" != '' ]; then
+	echo "--debian-installer \""${_DEBIAN_INSTALLER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--debian-installer \""${_DEBIAN_INSTALLER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DEBIAN_INSTALLER_DISTRIBUTION" != '' ]; then
+	echo "--debian-installer-distribution \""${_DEBIAN_INSTALLER_DISTRIBUTION}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--debian-installer-distribution \""${_DEBIAN_INSTALLER_DISTRIBUTION}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DEBIAN_INSTALLER_PRESEEDFILE" != '' ]; then
+	echo "--debian-installer-preseedfile \""${_DEBIAN_INSTALLER_PRESEEDFILE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--debian-installer-preseedfile \""${_DEBIAN_INSTALLER_PRESEEDFILE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_DEBIAN_INSTALLER_GUI" != '' ]; then
+	echo "--debian-installer-gui \""${_DEBIAN_INSTALLER_GUI}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--debian-installer-gui \""${_DEBIAN_INSTALLER_GUI}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_FDISK" != '' ]; then
+	echo "--fdisk \""${_FDISK}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--fdisk \""${_FDISK}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_FIRMWARE_BINARY" != '' ]; then
+	echo "--firmware-binary \""${_FIRMWARE_BINARY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--firmware-binary \""${_FIRMWARE_BINARY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_FIRMWARE_CHROOT" != '' ]; then
+	echo "--firmware-chroot \""${_FIRMWARE_CHROOT}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--firmware-chroot \""${_FIRMWARE_CHROOT}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_GRUB_SPLASH" != '' ]; then
+	echo "--grub-splash \""${_GRUB_SPLASH}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--grub-splash \""${_GRUB_SPLASH}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_GZIP_OPTIONS" != '' ]; then
+	echo "--gzip-options \""${_GZIP_OPTIONS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--gzip-options \""${_GZIP_OPTIONS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_HOOKS" != '' ]; then
+	echo "--hooks \""${_HOOKS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--hooks \""${_HOOKS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_HDD_SIZE" != '' ]; then
+	echo "--hdd-size \""${_HDD_SIZE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--hdd-size \""${_HDD_SIZE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_INITRAMFS" != '' ]; then
+	echo "--initramfs \""${_INITRAMFS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--initramfs \""${_INITRAMFS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_INITRAMFS_COMPRESSION" != '' ]; then
+	echo "--initramfs-compression \""${_INITRAMFS_COMPRESSION}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--initramfs-compression \""${_INITRAMFS_COMPRESSION}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_INITSYSTEM" != '' ]; then
+	echo "--initsystem \""${_INITSYSTEM}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--initsystem \""${_INITSYSTEM}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_INTERACTIVE" != '' ]; then
+	echo "--interactive \""${_INTERACTIVE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--interactive \""${_INTERACTIVE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_ISOHYBRID_OPTIONS" != '' ]; then
+	echo "--isohybrid-options \""${_ISOHYBRID_OPTIONS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--isohybrid-options \""${_ISOHYBRID_OPTIONS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_ISO_APPLICATION" != '' ]; then
+	echo "--iso-application \""${_ISO_APPLICATION}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--iso-application \""${_ISO_APPLICATION}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_ISO_PREPARER" != '' ]; then
+	echo "--iso-preparer \""${_ISO_PREPARER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--iso-preparer \""${_ISO_PREPARER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_ISO_PUBLISHER" != '' ]; then
+	echo "--iso-publisher \""${_ISO_PUBLISHER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--iso-publisher \""${_ISO_PUBLISHER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_ISO_VOLUME" != '' ]; then
+	echo "--iso-volume \""${_ISO_VOLUME}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--iso-volume \""${_ISO_VOLUME}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_JFFS2_ERASEBLOCK" != '' ]; then
+	echo "--jffs2-eraseblock \""${_JFFS2_ERASEBLOCK}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--jffs2-eraseblock \""${_JFFS2_ERASEBLOCK}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_KEYRING_PACKAGES" != '' ]; then
+	echo "--keyring-packages \""${_KEYRING_PACKAGES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--keyring-packages \""${_KEYRING_PACKAGES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_LINUX_PACKAGES" != '' ]; then
+	echo "--linux-packages \""${_LINUX_PACKAGES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--linux-packages \""${_LINUX_PACKAGES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_LINUX_FLAVOURS" != '' ]; then
+	echo "--linux-flavours \""${_LINUX_FLAVOURS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--linux-flavours \""${_LINUX_FLAVOURS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_LOSETUP" != '' ]; then
+	echo "--losetup \""${_LOSETUP}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--losetup \""${_LOSETUP}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MEMTEST" != '' ]; then
+	echo "--memtest \""${_MEMTEST}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--memtest \""${_MEMTEST}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_MIRROR_BOOTSTRAP" != '' ]; then
+	echo "--parent-mirror-bootstrap \""${_PARENT_MIRROR_BOOTSTRAP}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-mirror-bootstrap \""${_PARENT_MIRROR_BOOTSTRAP}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_MIRROR_CHROOT" != '' ]; then
+	echo "--parent-mirror-chroot \""${_PARENT_MIRROR_CHROOT}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-mirror-chroot \""${_PARENT_MIRROR_CHROOT}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_MIRROR_CHROOT_SECURITY" != '' ]; then
+	echo "--mirror-chroot-security \""${_PARENT_MIRROR_CHROOT_SECURITY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mirror-chroot-security \""${_PARENT_MIRROR_CHROOT_SECURITY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_MIRROR_BINARY" != '' ]; then
+	echo "--parent-mirror-binary \""${_PARENT_MIRROR_BINARY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-mirror-binary \""${_PARENT_MIRROR_BINARY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_MIRROR_BINARY_SECURITY" != '' ]; then
+	echo "--parent-mirror-binary-security \""${_PARENT_MIRROR_BINARY_SECURITY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-mirror-binary-security \""${_PARENT_MIRROR_BINARY_SECURITY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_PARENT_MIRROR_DEBIAN_INSTALLER" != '' ]; then
+	echo "--parent-mirror-debian-installer \""${_PARENT_MIRROR_DEBIAN_INSTALLER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--parent-mirror-debian-installer \""${_PARENT_MIRROR_DEBIAN_INSTALLER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MIRROR_BOOTSTRAP" != '' ]; then
+	echo "--mirror-bootstrap \""${_MIRROR_BOOTSTRAP}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mirror-bootstrap \""${_MIRROR_BOOTSTRAP}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MIRROR_CHROOT" != '' ]; then
+	echo "--mirror-chroot \""${_MIRROR_CHROOT}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mirror-chroot \""${_MIRROR_CHROOT}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MIRROR_CHROOT_SECURITY" != '' ]; then
+	echo "--mirror-chroot-security \""${_MIRROR_CHROOT_SECURITY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mirror-chroot-security \""${_MIRROR_CHROOT_SECURITY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MIRROR_BINARY" != '' ]; then
+	echo "--mirror-binary \""${_MIRROR_BINARY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mirror-binary \""${_MIRROR_BINARY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MIRROR_BINARY_SECURITY" != '' ]; then
+	echo "--mirror-binary-security \""${_MIRROR_BINARY_SECURITY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mirror-binary-security \""${_MIRROR_BINARY_SECURITY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MIRROR_DEBIAN_INSTALLER" != '' ]; then
+	echo "--mirror-debian-installer \""${_MIRROR_DEBIAN_INSTALLER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mirror-debian-installer \""${_MIRROR_DEBIAN_INSTALLER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_MODE" != '' ]; then
+	echo "--mode \""${_MODE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--mode \""${_MODE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_SYSTEM" != '' ]; then
+	echo "--system \""${_SYSTEM}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--system \""${_SYSTEM}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_ROOT_FILESYSTEM" != '' ]; then
+	echo "--net-root-filesystem \""${_NET_ROOT_FILESYSTEM}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-root-filesystem \""${_NET_ROOT_FILESYSTEM}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_ROOT_MOUNTOPTIONS" != '' ]; then
+	echo "--net-root-mountoptions \""${_NET_ROOT_MOUNTOPTIONS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-root-mountoptions \""${_NET_ROOT_MOUNTOPTIONS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_ROOT_PATH" != '' ]; then
+	echo "--net-root-path \""${_NET_ROOT_PATH}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-root-path \""${_NET_ROOT_PATH}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_ROOT_SERVER" != '' ]; then
+	echo "--net-root-server \""${_NET_ROOT_SERVER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-root-server \""${_NET_ROOT_SERVER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_COW_FILESYSTEM" != '' ]; then
+	echo "--net-cow-filesystem \""${_NET_COW_FILESYSTEM}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-cow-filesystem \""${_NET_COW_FILESYSTEM}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_COW_MOUNTOPTIONS" != '' ]; then
+	echo "--net-cow-mountoptions \""${_NET_COW_MOUNTOPTIONS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-cow-mountoptions \""${_NET_COW_MOUNTOPTIONS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_COW_PATH" != '' ]; then
+	echo "--net-cow-path \""${_NET_COW_PATH}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-cow-path \""${_NET_COW_PATH}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_COW_SERVER" != '' ]; then
+	echo "--net-cow-server \""${_NET_COW_SERVER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-cow-server \""${_NET_COW_SERVER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_NET_TARBALL" != '' ]; then
+	echo "--net-tarball \""${_NET_TARBALL}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--net-tarball \""${_NET_TARBALL}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_SWAP_FILE_PATH" != '' ]; then
+	echo "--swap-file-path \""${_SWAP_FILE_PATH}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--swap-file-path \""${_SWAP_FILE_PATH}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_SWAP_FILE_SIZE" != '' ]; then
+	echo "--swap-file-size \""${_SWAP_FILE_SIZE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--swap-file-size \""${_SWAP_FILE_SIZE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_SECURITY" != '' ]; then
+	echo "--security \""${_SECURITY}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--security \""${_SECURITY}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_SOURCE" != '' ]; then
+	echo "--source \""${_SOURCE}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--source \""${_SOURCE}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_SOURCE_IMAGES" != '' ]; then
+	echo "--source-images \""${_SOURCE_IMAGES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--source-images \""${_SOURCE_IMAGES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_TASKSEL" != '' ]; then
+	echo "--tasksel \""${_TASKSEL}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--tasksel \""${_TASKSEL}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_TEMPLATES" != '' ]; then
+	echo "--templates \""${_TEMPLATES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--templates \""${_TEMPLATES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_UPDATES" != false ]; then
+	echo "--updates \""${_UPDATES}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--updates \""${_UPDATES}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_BACKPORTS" != false ]; then
+	echo "--backports \""${_BACKPORTS}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--backports \""${_BACKPORTS}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+if [ "$_WIN32_LOADER" != false ]; then
+	echo "--win32-loader \""${_WIN32_LOADER}"\" \\" >> ./myautolbconfigcmd.sh
+	echo "--win32-loader \""${_WIN32_LOADER}"\" \\" >> ./MyLbConfig$this_datetimefile.txt
+fi
+echo "${@}" >> ./myautolbconfigcmd.sh
+echo "${@}" >> ./MyLbConfig$this_datetimefile.txt
+echo "echo \"================================================\"" >> ./myautolbconfigcmd.sh
+
+#execute cmd
+mkdir ./config
+cp -rf ./0myincludes/* ./config
+chmod +x ./myautolbconfigcmd.sh && ./myautolbconfigcmd.sh
+echo "================================================"
+# clean commande cache
+rm -rf ./myautolbconfigcmd.sh
+# move command backup in config directory
+mv ./MyLbConfig$this_datetimefile.txt ./config/MyLbConfig$this_datetimefile.txt
+echo "LB CONFIG ERR NEXT TO THIS LINE :)"
+echo "Your final command saved to ./config/MyLbConfig$this_datetimefile.txt"
+echo "Nice Work. Bye o/"

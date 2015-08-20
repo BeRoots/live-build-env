@@ -1,0 +1,55 @@
+#///////////////////////////////////////////////////
+#// DEV TOOLS
+#///////////////////////////////////////////////////
+
+#/////
+#// VIRTUALBOX: key & repository add in /archives
+#///////////////
+#virtualbox
+
+
+#/////
+#// GIT: client pour github web api
+#///////////////
+git
+#git-gui
+
+#/////
+#// C ; C++ ; make ; dpkg-dev: 
+#///////////////
+build-essential
+
+#/////
+#// OTHER: 
+#///////////////
+#package
+
+#/////
+#// C#: 
+#///////////////
+#mono-gmcs
+#monodevelop
+#mono-xsp
+
+
+#/////
+#// JAVA: 
+#///////////////
+#cd /opt
+#sudo tar -xzvf <path>/jdk-7u21-linux-x64.tar.gz
+#sudo update-alternatives --install /usr/bin/java java /opt/jdk1.7.0_2$
+#sudo update-alternatives --install /usr/bin/javac javac /opt/jdk1.7.0$
+#sudo update-alternatives --set java /opt/jdk1.7.0_21/bin/java
+#sudo update-alternatives --set javac /opt/jdk1.7.0_21/bin/java
+#java -version
+
+#/////
+#// netbeans IDE:
+#///////////////
+# neatbeans.sh (download on https://netbeans.org/ & chmod u+x)
+
+#/////
+#// live-build: build iso-hybrid
+#///////////////
+live-build
+live-images

@@ -1,0 +1,10 @@
+apache2
+apache2-doc
+php5
+#attention question
+mysql-server-5.5
+php5-intl
+php5-mysql
+php5-xdebug
+#attention question
+phpmyadmin
