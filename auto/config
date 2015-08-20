@@ -78,7 +78,7 @@ _DEBCONF_PRIORITY='critical' # low|medium|high|critical
 
 _DEBIAN_INSTALLER_='false' # true|cdrom|netinst|netboot|businesscard|live|false
 _DEBIAN_INSTALLER_DISTRIBUTION='hdd' # daily|CODENAME
-_DEBIAN_INSTALLER_PRESEEDFILE='local/preseed.cfg' # FILE|URL
+_DEBIAN_INSTALLER_PRESEEDFILE='' # FILE|URL local/preseed.cfg
 _DEBIAN_INSTALLER_GUI='true' # true|false
 
 _FDISK='' # fdisk|fdisck.dist #This is autodet. and does generally not need any customization.
@@ -584,8 +584,8 @@ echo "${@}" >> ./MyLbConfig$this_datetimefile.txt
 echo "echo \"================================================\"" >> ./myautolbconfigcmd.sh
 
 #execute cmd
-mkdir ./config
-cp -rf ./0myincludes/* ./config
+#mkdir ./config
+#mkdir ./local
 chmod +x ./myautolbconfigcmd.sh && ./myautolbconfigcmd.sh
 echo "================================================"
 # clean commande cache
@@ -594,4 +594,5 @@ rm -rf ./myautolbconfigcmd.sh
 mv ./MyLbConfig$this_datetimefile.txt ./config/MyLbConfig$this_datetimefile.txt
 echo "LB CONFIG ERR NEXT TO THIS LINE :)"
 echo "Your final command saved to ./config/MyLbConfig$this_datetimefile.txt"
+cp -rf ./0myincludes/v1/* ./
 echo "Nice Work. Bye o/"
