@@ -7,7 +7,7 @@
 
 #live-build specials params
 _IGNORESYSTEMDEFAULTS=true  # true|false
-_CLEAN=true # true|false
+_CLEAN=false # true|false
 _DEBUG=false # true|false
 _DUMP=false # true|false
 _FORCE=false # true|false
