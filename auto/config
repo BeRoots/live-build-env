@@ -76,7 +76,7 @@ _PARENT_DEBIAN_INSTALLER_DISTRIBUTION='jessie' # CODENAME
 _DEBCONF_FRONTEND='noninteractive' # dialog|editor|noninteractive|readline
 _DEBCONF_PRIORITY='critical' # low|medium|high|critical
 
-_DEBIAN_INSTALLER_='false' # true|cdrom|netinst|netboot|businesscard|live|false
+_DEBIAN_INSTALLER_='live' # true|cdrom|netinst|netboot|businesscard|live|false
 _DEBIAN_INSTALLER_DISTRIBUTION='hdd' # daily|CODENAME
 _DEBIAN_INSTALLER_PRESEEDFILE='' # FILE|URL local/preseed.cfg
 _DEBIAN_INSTALLER_GUI='true' # true|false
@@ -121,13 +121,13 @@ _MEMTEST='memtest86+' # memtest86+|memtest86|none
 _PARENT_MIRROR_BOOTSTRAP='http://ftp.fr.debian.org/debian/' # URL
 _PARENT_MIRROR_CHROOT='http://ftp.fr.debian.org/debian/' # URL
 _PARENT_MIRROR_CHROOT_SECURITY='http://security.debian.org/' # URL
-_PARENT_MIRROR_BINARY='http://http.debian.net/debian/' # URL
+_PARENT_MIRROR_BINARY='http://ftp.fr.debian.org/debian/' # URL
 _PARENT_MIRROR_BINARY_SECURITY='http://security.debian.org/' # URL
 _PARENT_MIRROR_DEBIAN_INSTALLER='http://ftp.debian.org/debian/' # URL
 _MIRROR_BOOTSTRAP='http://ftp.fr.debian.org/debian/' # URL
 _MIRROR_CHROOT='http://ftp.fr.debian.org/debian/' # URL
 _MIRROR_CHROOT_SECURITY='http://security.debian.org/' # URL
-_MIRROR_BINARY='http://http.debian.net/debian/' # URL
+_MIRROR_BINARY='http://ftp.fr.debian.org/debian/' # URL
 _MIRROR_BINARY_SECURITY='http://security.debian.org/' # URL
 _MIRROR_DEBIAN_INSTALLER='http://ftp.debian.org/debian/' # URL
 

@@ -2,5 +2,9 @@
 rm -rf config
 rm -rf local/
 rm -rf cache
+rm -rf binary/
+rm -rf chroot/
+rm -rf chroot.*
+rm -rf .lock
 rm -rf .build
 rm -f build.log
